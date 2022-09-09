@@ -12,6 +12,7 @@ from flask_jwt_extended import (
     create_access_token,get_jwt
 )
 
+
 api = Blueprint('api', __name__)
 
 
@@ -67,3 +68,10 @@ def protected():
     
     return jsonify({"id": user.id, "email": user.email }), 200
 
+
+@api.route('/logout', methods=['DELETE'])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    blacklist.add(jti)
+    return jsonify({"msg": "Successfully logged out"}), 200

@@ -13,7 +13,7 @@ from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required,get_jwt
 from api.models import db, User
-
+from api.routes import blacklist
 
 #from models import Person
 
@@ -28,7 +28,6 @@ app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 jwt = JWTManager(app)
 
 
-blacklist = set()
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(self,decrypted_token):
     jti = decrypted_token['jti']
