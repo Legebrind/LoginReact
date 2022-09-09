@@ -11,8 +11,9 @@ from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required,get_jwt
 from api.models import db, User
+
 
 #from models import Person
 
@@ -21,9 +22,24 @@ static_file_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
-app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET")
+app.config['JWT_SECRET_KEY'] = 'top-secret'  # Change this!
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 jwt = JWTManager(app)
 
+
+blacklist = set()
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blacklist(self,decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in blacklist
+
+@app.route('/logout', methods=['DELETE'])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    blacklist.add(jti)
+    return jsonify({"msg": "Successfully logged out"}), 200
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:

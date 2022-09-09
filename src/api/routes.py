@@ -1,15 +1,26 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import redis
+from datetime import timedelta
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
 from sqlalchemy.sql import text
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import (
+    JWTManager, jwt_required, get_jwt_identity,
+    create_access_token,get_jwt
+)
 
 api = Blueprint('api', __name__)
 
 
+blacklist = set()
+
+""" @jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in blacklist """
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -55,3 +66,4 @@ def protected():
     user = User.query.get(current_user_id)
     
     return jsonify({"id": user.id, "email": user.email }), 200
+

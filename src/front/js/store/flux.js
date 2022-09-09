@@ -22,7 +22,22 @@ const getState = ({ getStore, getActions, setStore }) => {
       exampleFunction: () => {
         getActions().changeColor(0, "green");
       },
-      logout: () => {
+      logout: async () => {
+        const store = getStore();
+        const opts = {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + store.token,
+          },
+        };
+        try {
+          const resp = await fetch(process.env.BACKEND_URL + "/logout", opts);
+          const data = await resp.json();
+          return data;
+        } catch (error) {
+          console.error("There has been an error loging out");
+        }
+
         sessionStorage.removeItem("token");
         setStore({ token: null });
         setStore({ user: null });
@@ -41,7 +56,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         };
         try {
           const resp = await fetch(
-            "https://3001-4geeksacade-reactflaskh-xl8b4nbg08e.ws-eu63.gitpod.io/api/protected",
+            process.env.BACKEND_URL + "/api/protected",
             opts
           );
           const data = await resp.json();
@@ -63,7 +78,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         };
         try {
           const resp = await fetch(
-            "https://3001-4geeksacade-reactflaskh-xl8b4nbg08e.ws-eu63.gitpod.io/api/token",
+            process.env.BACKEND_URL + "/api/token",
             opts
           );
           if (resp.status !== 200) {
@@ -92,7 +107,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         };
         try {
           const resp = await fetch(
-            "https://3001-4geeksacade-reactflaskh-xl8b4nbg08e.ws-eu63.gitpod.io/api/register",
+            process.env.BACKEND_URL + "/api/register",
             opts
           );
           if (resp.status !== 200) {
