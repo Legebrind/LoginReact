@@ -77,7 +77,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           }),
         };
         try {
-          console.log(process.env.BACKEND_URL);
           const resp = await fetch(
             process.env.BACKEND_URL + "/api/token",
             opts
@@ -108,7 +107,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         };
         try {
           const resp = await fetch(
-            "https://3001-legebrind-loginreact-bjiuld8u54i.ws-eu67.gitpod.io/api/register",
+            process.env.BACKEND_URL + "/api/register",
             opts
           );
           if (resp.status !== 200) {
